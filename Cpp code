@@ -1,0 +1,457 @@
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include <conio.h>
+#include <stdlib.h>
+#include <string>
+#define max 30
+using namespace std;
+
+string passw1()
+{
+    ofstream o;
+    string pass = "";
+    char ch;
+    ch = _getch();
+    while (ch != 13)
+    { // character 13 is enter
+        pass.push_back(ch);
+        cout << '*';
+        ch = _getch();
+    }
+    return pass;
+}
+
+int adminlog()
+{
+    string username = "admin@dukaan", password = "admin@", passw, usrn;
+    system("cls");
+
+    cout << "\nUSERNAME: ";
+    cin >> usrn;
+    if (usrn == username)
+    {
+        cout << "\nPASSWORD: ";
+        passw = passw1();
+        if (password == passw)
+        {
+            cout << endl;
+            cout << "\nWELCOME! LOGIN SUCCESSFULLY!!";
+            return 1;
+        }
+        else
+        {
+            cout << "\nWRONG PASSWORD!";
+            return 0;
+        }
+    }
+    cout << "\nWRONG USERNAME!";
+    return 0;
+}
+
+void registeru()
+{
+    string name, passw;
+    char mail[max], usrn[max];
+    system("cls");
+    ofstream o;
+    o.open("cust pass.txt", o.app);
+   
+    cout<<"LOGIN WINDOW! \nenter the details carefully!"<<endl;
+
+    cout << "NAME: ";
+    cin >> name;
+    o << name << "\n";
+
+    cout << "EMAIL: ";
+    cin >> mail;
+    o << mail << "\n";
+
+    cout << "USERNAME: ";
+    cin >> usrn;
+    o << usrn << "\n";
+
+    cout << "PASSWORD: ";
+    passw = passw1();
+    o << passw << "\n";
+    cout << endl;
+    o.close();
+
+    cout << "REGISTERED SUCCESSFULLY!!\n";
+}
+
+int custlog()
+{
+    string usrn, pasw, username, password;
+    ifstream i;
+    i.open("cust pass.txt");
+
+    system("cls");
+    cout << "!  LOGIN WINDOW  !";
+    cout << "\nUSERNAME: ";
+    cin >> usrn;
+    cout << "\nPASSWORD: ";
+    pasw = passw1();
+   
+
+    while (!i.eof())
+    {
+        i >> username;
+        if (username == usrn)
+        {
+            i.seekg(ios::beg);
+            while (!i.eof())
+            {
+                i >> password;
+                if (password == pasw)
+                {
+                    cout << "LOGIN SUCCESSFUL!";
+                    return 1;
+                }
+            }
+            cout << "\nWRONG PASSWORD!";
+            return 0;
+        }
+    }
+    cout << "\nWRONG USERNAME!";
+    return 0;
+}
+
+class Customer;
+class Initial
+{
+protected:
+    char bname[30], aname[20];
+    int idn, pr, no;
+
+public:
+    void display();
+    int search(int key);
+    int asearch(char *key1);
+    int bsearch(char *key1);
+};
+
+void Initial::display()
+{
+    cout << endl
+         << idn << "\t\t" << bname << "\t\t" << aname << "\t\t" << pr << "\t\t" << no << endl;
+}
+
+int Initial::search(int key)
+{
+    if (key == idn)
+        return 1;
+    return 0;
+}
+
+int Initial::asearch(char *key1)
+{
+    if (key1 == aname)
+        return 1;
+    return 0;
+}
+
+int Initial::bsearch(char *key1)
+{
+    if (key1 == bname)
+        return 1;
+    return 0;
+}
+
+void heading()
+{
+    cout << endl
+         << "id no.\t"
+         << "book name\t"
+         << "author name\t"
+         << "price\t"
+         << "no of copies available" << endl;
+}
+
+class Customer : public Initial
+{
+public:
+    void buy()
+    {
+        no = no - 1;
+    }
+};
+
+class Final : public Customer
+{
+public:
+    void add();
+    void update();
+};
+
+void Final::add()
+{
+    cout << endl
+         << "enter id no " << endl;
+    cin >> idn;
+    cout << endl
+         << "enter book name " << endl;
+    cin >> bname;
+    cout << endl
+         << "enter author name " << endl;
+    cin >> aname;
+    cout << endl
+         << "enter price of the book " << endl;
+    cin >> pr;
+    cout << endl
+         << "enter quantity " << endl;
+    cin >> no;
+}
+
+void Final::update()
+{
+    int ch;
+    do
+    {
+        cout << endl
+             << "what do you want to update?\n1 index no\n2 book name\n3 author name\n4 price\n5 quantity\n6 quit";
+        cin >> ch;
+        switch (ch)
+        {
+        case 1:
+            cin >> idn;
+            break;
+        case 2:
+            cin >> bname;
+            break;
+        case 3:
+            cin >> aname;
+            break;
+        case 4:
+            cin >> pr;
+            break;
+        case 5:
+            cin >> no;
+            break;
+        case 6:
+            return;
+        }
+    } while (1);
+}
+void admin(int *n, Final f[max])
+{
+    int ch, in, ch1, i;
+    char an[max], bn[max];
+
+    do
+    {
+        cout << endl
+             << "enter your choice\n1 add book\n2 update book\n3 delete book\n4 search a book\n5 display all books\n6 exit" << endl;
+        cin >> ch;
+        switch (ch)
+        {
+        case 1:
+            f[*n++].add();
+            break;
+        case 2:
+            cout << "enter the index of book ";
+            cin >> in;
+            for (i = 0; i < *n; i++)
+            {
+                if (f[i].search(in) == 1)
+                {
+                    f[i].update();
+                }
+            }
+            break;
+
+            // delete
+
+        case 4:
+            cout << "\n1 search by id\n2 search by author name\n3 search by book name" << endl;
+            cin >> ch1;
+            switch (ch1)
+            {
+            case 1:
+                cout << "enter id no ";
+                cin >> in;
+                for (i = 0; i < *n; i++)
+                {
+                    if (f[i].search(in) == 1)
+                    {
+                        f[i].display();
+                    }
+                }
+                break;
+            case 2:
+                cout << "enter author name ";
+                cin >> an;
+                for (i = 0; i < *n; i++)
+                {
+                    if (f[i].asearch(an) == 1)
+                    {
+                        f[i].display();
+                    }
+                }
+                break;
+            case 3:
+                cout << "enter book name ";
+                cin >> bn;
+                for (i = 0; i < *n; i++)
+                {
+                    if (f[i].asearch(bn) == 1)
+                    {
+                        f[i].display();
+                    }
+                }
+                break;
+            case 4:
+                break;
+            }
+            break;
+
+        case 5:
+            heading();
+            for (i = 0; i < *n; i++)
+            {
+                f[i].display();
+            }
+            break;
+        case 6:
+            return;
+        }
+    } while (1);
+}
+
+void custmenu(int n, Final f[max])
+{
+    int ch, ch1, idn, i, count=0;
+    char an[max], bn[max];
+    do
+    {
+   
+        cout << endl
+             << "\n1 Show all books\n2 Search a book\n3 Buy your favourite book\n4 exit" << endl;
+        cin >> ch;
+
+        switch (ch)
+        {
+        case 1:
+            heading();
+            for (i = 0; i < n; i++)
+            {
+                f[i].display();
+            }
+            break;
+        case 2:
+            cout << "\n1 search by id\n2 search by author name\n3 search by book name" << endl;
+            cin >> ch1;
+            switch (ch1)
+            {
+            case 1:
+                cout << "enter id no ";
+                cin >> idn;
+                for (i = 0; i < n; i++)
+                {
+                    if (f[i].search(idn) == 1)
+                    {
+                        f[i].display();
+                    }
+                }
+                break;
+            case 2:
+                cout << "enter author name ";
+                cin >> an;
+                for (i = 0; i < n; i++)
+                {
+                    if (f[i].asearch(an) == 1)
+                    {
+                        f[i].display();
+                    }
+                }
+                break;
+            case 3:
+                cout << "enter book name ";
+                cin >> bn;
+                for (i = 0; i < n; i++)
+                {
+                    if (f[i].asearch(bn) == 1)
+                    {
+                        f[i].display();
+                    }
+                }
+                break;
+            case 4:
+                break;
+            }
+        break;
+        case 3:
+            cout << "enter id no ";
+            cin >> idn;
+            for (i = 0; i < n; i++)
+            {
+                if (f[i].search(idn) == 1)
+                {
+                count++;
+                    f[i].display();
+                    f[i].buy();
+                    break;
+                }
+            }
+            if(count!=0)
+            {
+            cout<<"Happy shopping!! Take your book home! "<<endl;
+                cout << endl
+                 << "updated quantities are" << endl;
+                f[i].display();
+}
+else
+  cout<<"id not found!";
+ 
+break;
+        case 4:
+        return;
+        }
+    } while (1);
+}
+
+int main()
+{
+    Final f[max];
+    int ch, n = 0,c1,ans;
+    //custmenu(n, f);
+    //admin(&n, f);
+   
+    cout<<"    ------------------HAMARI DUKAAN--------------------";
+    do
+    {
+   
+        //system("cls");
+        cout<<"\n1 Register\n2 Login\n3 Exit\n";
+        cin>>ch;
+        switch(ch)
+        {
+            case 1:
+               registeru();
+               break;
+            case 2:
+                system("cls");
+                cout<<"LOGIN WINDOW";
+                cout<<"\n1 as administrator\n2 as customer";
+                cin>>c1;
+               
+                switch(c1)
+                {
+                    case 1:
+                      ans=adminlog();
+                      if(ans==1)
+                         admin(&n, f);
+                      break;
+                    case 2:
+                       ans=custlog();
+                       if(ans==1)
+                          custmenu(n, f);
+                       break;
+                }
+                break;
+            case 3:
+            exit(0);
+        }
+
+    } while (ch!=3);
+}
